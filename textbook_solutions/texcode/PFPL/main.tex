@@ -1,0 +1,143 @@
+\documentclass[11pt]{article}
+\usepackage[top=0.8in, bottom=1in, left=0.4in, right=0.4in]{geometry}
+\usepackage{amsfonts, amsmath, amssymb, amsthm}
+\usepackage{mathtools}
+\usepackage{enumerate}
+\usepackage{fancyhdr}
+\usepackage{listings}
+\usepackage{tikz}
+\usetikzlibrary{arrows}
+\pagestyle{fancy}
+\setlength{\headheight}{26pt}
+\setlength{\headsep}{16pt}
+% in order to compile this file you need to get 'header.tex' from
+% Google Drive and change the line below to the appropriate file path
+\input{header.tex}
+\newcommand{\innerp}[2]{\langle #1, #2\rangle}
+\newcommand{\cis}{\text{ cis}}
+\newcommand{\Mod}[1]{\ \mathrm{mod}\ #1}
+% \newcommand{\abs}[1]{\left\Biggl #1\right\Biggr }
+\newcommand{\xone}{\bar{x}^{(1)}}
+\newcommand{\res}{\text{res}}
+\newcommand{\norm}[1]{\left\Vert #1 \right \Vert }
+\newcommand{\err}{\text{err}}
+\newcommand{\mybaddelta}{\frac{1}
+    {   \sqrt{
+            \ln(
+                \frac{p_k}{\varepsilon x^{3k}}
+                )
+        }
+    }}
+\usepackage[mathscr]{euscript}
+\let\euscr\mathscr \let\mathscr\relax% just so we can load this and rsfs
+\usepackage[scr]{rsfso}
+\newcommand{\xtwo}{\bar{x}^{(2)}}
+\newcommand{\hwheader}{  \chead{\Large \textbf{\\Solutions to PFPL Problems}}  \lhead{\small}  \rhead{\small \textbf{Cory Laban} \\}}
+
+\newcommand{\Eitem}{\addtocounter{enumi}{1} \item[{\bf E} \labelenumi] }
+
+\hwheader
+\begin{document}
+\begin{enumerate}
+\item[] \textbf{Chapter 2 Exercises}
+\begin{enumerate}
+    \item[2.1] 
+    Prove that for every $\nat m$, $\nat n$, there exists a unique $\nat p$ satisfying the judgement $\max(m; n; p)$.
+    \begin{proof}
+    We define the function $\func{\max}{\nat \times \nat}{\nat}$ with the following rules:
+    \begin{align}
+    \frac{\nat b}{\max(\zero; b)} && 
+    \frac{\max(\nat n; \nat m; \nat p)}{\max(\suc{n}; \suc{m}; \suc{p})} 
+    \end{align}
+    
+    Let $\prop(m)$ be the proposition that if $\nat n$ then $\exists p$ s.t. $\max(m; n; p)$.\\
+    
+    To prove existence, we note that $\prop(\zero)$ for all $\nat n$, given rule $1.1$, which settles our base case. Now if we suppose that $\nat m$, $\nat n$, $\prop(m)$, we conclude by rule $1.2$ that $\prop(\suc{m})$.\\
+    
+    To prove uniqueness, we first note that if $n$ is $\zero$ then for all $\nat m$ we have $\prop(m)$ with $p$ is $m$. Now suppose $\max(m; n; p_1)$ and $\max(m; n; p_2)$. Letting $n = \suc{n'}, m= \suc{m'}, p_1 = \suc{p_1'}, p_2 = \suc{p_2'}$, we conclude by the inductive hypothesis that $p_1'$ is $p_2'$ and so $p_1$ is $p_2$. 
+    \end{proof}
+    
+    \item[2.2]
+    Prove that the judgement $\hgt$ defines a function from trees to natural numbers.
+    \begin{proof}
+    To show that $\hgt$ defines a function, we need to show that for all $t \in \text{trees}$ there exists some $n \in \NN$, such that $\hgt(t;n)$. We use induction:\\
+    
+    For our base case suppose $t$ is $\textbf{empty}$. Then by our first rule we have that $\hgt(t;\zero)$.\\
+    
+    Now consider $t \textbf{ tree}$, where $\text{node}(t_1; t_2) \textbf{ tree}$. By the inductive hypothesis, we have that $\hgt(t_1;n_1)$ and $\hgt(t_2;n_2)$ for some $\nat n_1$ and $\nat n_2$. By exercise 2.1, we know there exists some $\nat n$, such that $\max(n_1;n_2;n)$. Therefore by the second rule in this problem, we conclude that 
+    
+    \begin{center}
+        \begin{tabular}{c}
+             $\hgt(t_1;n_1) \ \ \hgt(t_2;n_2) \ \ \max(n_1; n_2; n)$ \\ 
+             \hline
+             $\hgt(\textbf{node}(t_1;t_2);n)$\\
+             \hline
+             $\hgt(t; n)$
+        \end{tabular}
+    \end{center}
+    \end{proof}
+    
+    \item[2.3] Give a simultaneous inductive definition of a ordered variadic trees. \\
+    \begin{center}
+        \begin{tabular}{c}
+            \hline
+            \textbf{empty} \textbf{forest}\\\\
+            $f$ \textbf{forest}\\
+            \hline
+            \textbf{node}(f) \textbf{tree}\\\\
+            $f$ \textbf{forest} \ \ \ $t$ \textbf{tree}\\
+            \hline
+            cons(t;f) \textbf{forest}
+        \end{tabular}
+    \end{center}
+    \\ \ \\ \ \\
+    \item[2.4] Give an inductive definition of the height of a variadic tree. \\
+    \begin{center}
+        \begin{tabular}{c}
+            \hline
+            \textbf{hgtForest}(\textbf{empty}; \zero) \\\\
+            \textbf{hgtForest}($f$;$h$)\\
+            \hline
+            \textbf{hgtTree}(\textbf{node}($f$); \suc{$n$})\\\\
+            \textbf{hgtForest}($f$;$h_1$) \ \ \
+                \textbf{hgtTree}($t$;$h_2$) \ \ \ 
+                $\max(h_1; h_2; h)$\\
+            \hline
+            \textbf{hgtForest}(\text{cons}($t$;$f$);$h$)
+        \end{tabular}
+    \end{center}
+    
+    \item[2.5] Give an inductive definition of the binary natural numbers.
+    \[
+    \frac{}{\zero \textbf{ bnn}} \ \ \ \ \ 
+    \frac{b \textbf{ bnn}}{\text{twice}(b) \ \textbf{bnn}} \ \ \ \ \ 
+    \frac{b \textbf{ bnn}}{\text{twiceplusone}(b) \textbf{ bnn}}
+    \]
+    
+    \item[2.6] Give an induction definition for the sum of binary natural numbers. \\\\
+    First the auxiliary definition of $\suc(p;q)$.
+    \[
+    \frac{}{\suc{\zero;\text{twiceplusone}(\zero)}} \ \ \ \ \ 
+    \frac{}{\suc{\text{twice}(p);\text{twiceplusone}(p)}} \ \ \ \ \
+    \frac{\suc{p;q}}{\suc{\text{twiceplusone}(p);\text{twice}(q)}}
+    \]
+    
+    Then we define each of the cases of input for sum:
+    \begin{center}
+        \begin{tabular}{c}
+             \hline
+             sum(\zero;\zero;\zero)\\\\
+             sum($m;n;k$)\\
+             \hline
+             sum(twice($m$); twice($n$); twice($k$))\\\\
+             sum($m;n;k$)\\
+             \hline
+             sum(twice($m$); twiceplusone($n$); twiceplusone($k$))\\\\
+             sum($m;n;k$)\\
+             \hline
+             sum(twiceplusone($m$); twiceplusone($n$); twice(\suc{$k$})\\
+        \end{tabular}
+    \end{center}
+\end{enumerate}
+\end{enumerate}
+\end{document}    
